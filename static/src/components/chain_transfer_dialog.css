@@ -1,0 +1,26 @@
+/* Chain Transfer Dialog Styles */
+
+.o_chain_transfer_dialog .o_chain_dropdown {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.o_chain_transfer_dialog .o_chain_dropdown .list-group-item {
+    background-color: #ffffff;
+    border-left: none;
+    border-right: none;
+    border-color: #f0f0f0;
+}
+
+.o_chain_transfer_dialog .o_chain_dropdown .list-group-item-action:hover,
+.o_chain_transfer_dialog .o_chain_dropdown .list-group-item-action:focus {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.o_chain_transfer_dialog .o_chain_dropdown .list-group-item-action:active {
+    background-color: #dee2e6;
+    color: #212529;
+}

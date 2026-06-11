@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Add chain transfer button to the barcode header navbar -->
+    <t t-inherit="stock_barcode.MainComponent" t-inherit-mode="extension">
+
+        <!-- Add the chain transfer icon button next to the settings (cog) button -->
+        <xpath expr="//button[hasclass('o_barcode_actions')]" position="before">
+            <button t-if="displayChainTransferButton"
+                    class="o_chain_transfer_btn btn me-1"
+                    t-att-class="hasChainTransferConfigured ? 'btn-warning text-white' : 'btn-outline-secondary'"
+                    t-on-click.stop="openChainTransferDialog"
+                    title="Chain Transfer Settings">
+                <i class="fa fa-link" t-att-class="hasChainTransferConfigured ? 'fa-chain' : 'fa-link'"/>
+            </button>
+        </xpath>
+
+    </t>
+
+</templates>

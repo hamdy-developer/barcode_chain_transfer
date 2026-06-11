@@ -1,0 +1,114 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* barcode_chain_transfer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: ENG/Mohamed Hamdy\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_transit_location_id
+msgid "Transit Location"
+msgstr "موقع العبور"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_dest_picking_type_id
+msgid "Destination Picking Type"
+msgstr "نوع عملية الوجهة"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_end_location_id
+msgid "End Location"
+msgstr "الموقع النهائي"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_origin
+msgid "Chain Reference"
+msgstr "مرجع السلسلة"
+
+#. module: barcode_chain_transfer
+#: addons/barcode_chain_transfer/models/stock_picking.py:1
+msgid "Could not generate a chain transfer sequence. Please check the sequence 'chain.transfer.origin' exists."
+msgstr "تعذر إنشاء تسلسل حركة السلسلة. يرجى التحقق من وجود التسلسل 'chain.transfer.origin'."
+
+#. module: barcode_chain_transfer
+#: addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.js:1
+msgid "Chain Transfer Settings"
+msgstr "إعدادات حركة السلسلة"
+
+#. module: barcode_chain_transfer
+#: model:ir.sequence,name:barcode_chain_transfer.seq_chain_transfer_origin
+msgid "Chain Transfer Origin"
+msgstr "مرجع أصل حركة السلسلة"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_transit_location_id
+msgid "Intermediate transit location. When set, this becomes the destination of the current transfer, and a second transfer is created from here to the End Location upon validation."
+msgstr "موقع العبور الوسيط. عند تعيينه، يصبح هذا هو وجهة الحركة الحالية، ويتم إنشاء حركة ثانية من هنا إلى الموقع النهائي عند التحقق."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_dest_picking_type_id
+msgid "The picking type for the automatically created second transfer."
+msgstr "نوع العملية للحركة الثانية التي يتم إنشاؤها تلقائياً."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_end_location_id
+msgid "The final destination location for the second transfer."
+msgstr "موقع الوجهة النهائي للحركة الثانية."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_origin
+msgid "Auto-generated reference shared by both chain transfers."
+msgstr "مرجع يتم إنشاؤه تلقائياً ومشترك بين حركتي السلسلة."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_state
+msgid "Chain State"
+msgstr "حالة السلسلة"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_company__approve_chain_by_manager
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_config_settings__approve_chain_by_manager
+msgid "Approve Chain Transfers by Manager"
+msgstr "موافقة المدير على حركات السلسلة"
+
+#. module: barcode_chain_transfer
+#: addons/barcode_chain_transfer/models/stock_picking.py:1
+msgid "This chain transfer must be approved by an Inventory Manager before validation."
+msgstr "يجب الموافقة على حركة السلسلة هذه من قبل مدير المخازن قبل التأكيد."
+
+#. module: barcode_chain_transfer
+#: addons/barcode_chain_transfer/models/stock_picking.py:2
+msgid "Only Inventory Managers are allowed to approve chain transfers."
+msgstr "يُسمح فقط لمديري المخازن بالموافقة على حركات السلسلة."
+
+#. module: barcode_chain_transfer
+#: addons/barcode_chain_transfer/views/stock_picking_views.xml:0
+msgid "Approve Chain"
+msgstr "الموافقة على السلسلة"
+
+#. module: barcode_chain_transfer
+#: selection:stock.picking,chain_state:0
+msgid "Draft"
+msgstr "مسودة"
+
+#. module: barcode_chain_transfer
+#: selection:stock.picking,chain_state:0
+msgid "Approved"
+msgstr "معتمدة"
+
+#. module: barcode_chain_transfer
+#: addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "The Destination Location of a chain transfer must match its Transit Location."
+msgstr "يجب أن يتطابق موقع الوجهة لنقل السلسلة مع موقع العبور."
+

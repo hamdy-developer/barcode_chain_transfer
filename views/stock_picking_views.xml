@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_barcode_chain" model="ir.ui.view">
+        <field name="name">stock.picking.form.barcode.chain</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <!-- Add invisible fields for header button evaluation -->
+            <xpath expr="//sheet" position="after">
+                <field name="approve_chain_by_manager" invisible="1"/>
+                <field name="chain_transit_location_id" invisible="1"/>
+                <field name="chain_state" invisible="1"/>
+                <field name="chain_origin" invisible="1"/>
+            </xpath>
+
+            <!-- Add Chain Group Smart Button -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button"
+                        name="action_view_chain_pickings"
+                        type="object"
+                        icon="fa-link"
+                        invisible="not chain_origin">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Chain Group</span>
+                    </div>
+                </button>
+            </xpath>
+
+            <!-- Add Approve Chain button to header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_approve_chain"
+                        string="Approve Chain"
+                        type="object"
+                        class="btn-primary"
+                        groups="stock.group_stock_manager"
+                        invisible="not chain_transit_location_id or not approve_chain_by_manager or chain_state == 'approved' or state in ('done', 'cancel')"/>
+            </xpath>
+
+            <!-- Add Chain Transfer tab to notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page name="chain_transfer" string="Chain Transfer">
+                    <group>
+                        <group string="Chain Configuration">
+                            <field name="chain_transit_location_id" readonly="state in ('done', 'cancel')" options="{'no_create': True}"/>
+                            <field name="chain_dest_picking_type_id" readonly="state in ('done', 'cancel')" options="{'no_create': True}"/>
+                            <field name="chain_use_putaway_rules" readonly="state in ('done', 'cancel')"/>
+                            <field name="chain_end_location_id" readonly="state in ('done', 'cancel')" options="{'no_create': True}" invisible="chain_use_putaway_rules"/>
+                        </group>
+                        <group string="Chain Status">
+                            <field name="chain_origin" readonly="1"/>
+                            <field name="chain_state" widget="badge" decoration-success="chain_state == 'approved'" decoration-warning="chain_state == 'draft'" invisible="not chain_transit_location_id or not approve_chain_by_manager"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="barcode_chain_transfer.ChainTransferDialog">
+        <Dialog title="dialogTitle" size="'md'">
+            <div class="o_chain_transfer_dialog p-3" t-on-click="onCloseDropdowns">
+                <!-- Approval Status Banner -->
+                <div t-if="state.approveChainByManager and hasChainData" class="mb-4">
+                    <div t-if="state.chainState == 'draft'" class="alert alert-warning d-flex align-items-center m-0" role="alert">
+                        <i class="fa fa-exclamation-triangle me-2 fs-4"/>
+                        <div>
+                            <strong>Approval Required:</strong> This chain transfer must be approved by an Inventory Manager before it can be validated.
+                        </div>
+                    </div>
+                    <div t-else="" class="alert alert-success d-flex align-items-center m-0" role="alert">
+                        <i class="fa fa-check-circle me-2 fs-4"/>
+                        <div>
+                            <strong>Approved:</strong> This chain transfer has been approved and is ready for validation.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transit Location Field -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">
+                        <i class="fa fa-exchange me-2"/>Transit Location
+                    </label>
+                    <div class="position-relative">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Search transit location..."
+                                   t-att-value="state.transitSearch"
+                                   t-on-input="onTransitSearchInput"
+                                   t-on-focus="onTransitFocus"
+                                   t-on-click.stop="() => {}"/>
+                            <button t-if="state.transitLocationId"
+                                    class="btn btn-outline-danger"
+                                    t-on-click.stop="clearTransitLocation"
+                                    title="Clear">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                        <div t-if="state.searchingTransit" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
+                            <i class="fa fa-spinner fa-spin text-muted"/>
+                        </div>
+                        <div t-if="state.searchingTransit and state.locationResults.length"
+                             class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
+                             style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+                            <t t-foreach="state.locationResults" t-as="loc" t-key="loc.id">
+                                <button class="list-group-item list-group-item-action py-2"
+                                        t-on-click.stop="() => this.selectTransitLocation(loc)">
+                                    <i class="fa fa-map-marker me-2 text-muted"/>
+                                    <t t-esc="loc.display_name"/>
+                                </button>
+                            </t>
+                        </div>
+                        <div t-if="state.searchingTransit and !state.locationResults.length"
+                             class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
+                             style="z-index: 1050;">
+                            <div class="list-group-item text-muted py-2">No locations found</div>
+                        </div>
+                    </div>
+                    <div t-if="state.transitLocationId" class="mt-1">
+                        <span class="badge bg-success">
+                            <i class="fa fa-check me-1"/>
+                            <t t-esc="state.transitLocationName"/>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Destination Picking Type Field -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">
+                        <i class="fa fa-truck me-2"/>Destination Picking Type
+                    </label>
+                    <div class="position-relative">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Search picking type..."
+                                   t-att-value="state.pickingTypeSearch"
+                                   t-on-input="onPickingTypeSearchInput"
+                                   t-on-focus="onPickingTypeFocus"
+                                   t-on-click.stop="() => {}"/>
+                            <button t-if="state.destPickingTypeId"
+                                    class="btn btn-outline-danger"
+                                    t-on-click.stop="clearPickingType"
+                                    title="Clear">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                        <div t-if="state.searchingPickingType" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
+                            <i class="fa fa-spinner fa-spin text-muted"/>
+                        </div>
+                        <div t-if="state.searchingPickingType and state.pickingTypeResults.length"
+                             class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
+                             style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+                            <t t-foreach="state.pickingTypeResults" t-as="pt" t-key="pt.id">
+                                <button class="list-group-item list-group-item-action py-2"
+                                        t-on-click.stop="() => this.selectPickingType(pt)">
+                                    <i class="fa fa-truck me-2 text-muted"/>
+                                    <t t-esc="pt.display_name"/>
+                                </button>
+                            </t>
+                        </div>
+                        <div t-if="state.searchingPickingType and !state.pickingTypeResults.length"
+                             class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
+                             style="z-index: 1050;">
+                            <div class="list-group-item text-muted py-2">No picking types found</div>
+                        </div>
+                    </div>
+                    <div t-if="state.destPickingTypeId" class="mt-1">
+                        <span class="badge bg-success">
+                            <i class="fa fa-check me-1"/>
+                            <t t-esc="state.destPickingTypeName"/>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Use Putaway Rules Checkbox -->
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="usePutawayRules" t-model="state.usePutawayRules" t-on-change="onPutawayRulesChange"/>
+                    <label class="form-check-label fw-bold text-dark" for="usePutawayRules">
+                        <i class="fa fa-magic me-2 text-warning"/>Use Putaway Rules
+                    </label>
+                    <div class="form-text mt-1">If checked, Odoo's putaway rules will automatically determine the End Location.</div>
+                </div>
+
+                <!-- End Location Field -->
+                <div class="mb-4" t-if="!state.usePutawayRules">
+                    <label class="form-label fw-bold text-primary">
+                        <i class="fa fa-map-pin me-2"/>End Location
+                    </label>
+                    <div class="position-relative">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Search end location..."
+                                   t-att-value="state.endLocationSearch"
+                                   t-on-input="onEndLocationSearchInput"
+                                   t-on-focus="onEndLocationFocus"
+                                   t-on-click.stop="() => {}"/>
+                            <button t-if="state.endLocationId"
+                                    class="btn btn-outline-danger"
+                                    t-on-click.stop="clearEndLocation"
+                                    title="Clear">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                        <div t-if="state.searchingEndLocation" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
+                            <i class="fa fa-spinner fa-spin text-muted"/>
+                        </div>
+                        <div t-if="state.searchingEndLocation and state.endLocationResults.length"
+                             class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
+                             style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+                            <t t-foreach="state.endLocationResults" t-as="loc" t-key="loc.id">
+                                <button class="list-group-item list-group-item-action py-2"
+                                        t-on-click.stop="() => this.selectEndLocation(loc)">
+                                    <i class="fa fa-map-pin me-2 text-muted"/>
+                                    <t t-esc="loc.display_name"/>
+                                </button>
+                            </t>
+                        </div>
+                        <div t-if="state.searchingEndLocation and !state.endLocationResults.length"
+                             class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
+                             style="z-index: 1050;">
+                            <div class="list-group-item text-muted py-2">No locations found</div>
+                        </div>
+                    </div>
+                    <div t-if="state.endLocationId" class="mt-1">
+                        <span class="badge bg-success">
+                            <i class="fa fa-check me-1"/>
+                            <t t-esc="state.endLocationName"/>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <t t-set-slot="footer">
+                <div class="d-flex w-100 justify-content-between">
+                    <div>
+                        <button t-if="hasChainData"
+                                class="btn btn-outline-danger me-2"
+                                t-on-click="onClear"
+                                t-att-disabled="state.saving">
+                            <i class="fa fa-trash me-1"/>Clear
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary me-2"
+                                t-on-click="props.close">
+                            Cancel
+                        </button>
+                        <button class="btn btn-primary"
+                                t-on-click="onApply"
+                                t-att-disabled="!canApply">
+                            <i class="fa fa-check me-1"/>
+                            <t t-if="state.saving">Saving...</t>
+                            <t t-else="">Apply</t>
+                        </button>
+                    </div>
+                </div>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>
