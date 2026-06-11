@@ -31,7 +31,7 @@
     'installable': True,
     'auto_install': False,
     'license': 'OPL-1',
-    'price': 79.00,
+    'price': 29.00,
     'currency': 'USD',
     'images': [
         'static/description/main_screenshot.png'
