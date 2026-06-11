@@ -19,7 +19,7 @@
                         name="action_view_chain_pickings"
                         type="object"
                         icon="fa-link"
-                        invisible="not chain_origin">
+                        attrs="{'invisible': [('chain_origin', '=', False)]}">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Chain Group</span>
                     </div>
@@ -33,7 +33,7 @@
                         type="object"
                         class="btn-primary"
                         groups="stock.group_stock_manager"
-                        invisible="not chain_transit_location_id or not approve_chain_by_manager or chain_state == 'approved' or state in ('done', 'cancel')"/>
+                        attrs="{'invisible': ['|', '|', '|', ('chain_transit_location_id', '=', False), ('approve_chain_by_manager', '=', False), ('chain_state', '=', 'approved'), ('state', 'in', ('done', 'cancel'))]}"/>
             </xpath>
 
             <!-- Add Chain Transfer tab to notebook -->
@@ -41,14 +41,14 @@
                 <page name="chain_transfer" string="Chain Transfer">
                     <group>
                         <group string="Chain Configuration">
-                            <field name="chain_transit_location_id" readonly="state in ('done', 'cancel')" options="{'no_create': True}"/>
-                            <field name="chain_dest_picking_type_id" readonly="state in ('done', 'cancel')" options="{'no_create': True}"/>
-                            <field name="chain_use_putaway_rules" readonly="state in ('done', 'cancel')"/>
-                            <field name="chain_end_location_id" readonly="state in ('done', 'cancel')" options="{'no_create': True}" invisible="chain_use_putaway_rules"/>
+                            <field name="chain_transit_location_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}" options="{'no_create': True}"/>
+                            <field name="chain_dest_picking_type_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}" options="{'no_create': True}"/>
+                            <field name="chain_use_putaway_rules" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+                            <field name="chain_end_location_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))], 'invisible': [('chain_use_putaway_rules', '=', True)]}" options="{'no_create': True}"/>
                         </group>
                         <group string="Chain Status">
                             <field name="chain_origin" readonly="1"/>
-                            <field name="chain_state" widget="badge" decoration-success="chain_state == 'approved'" decoration-warning="chain_state == 'draft'" invisible="not chain_transit_location_id or not approve_chain_by_manager"/>
+                            <field name="chain_state" widget="badge" decoration-success="chain_state == 'approved'" decoration-warning="chain_state == 'draft'" attrs="{'invisible': ['|', ('chain_transit_location_id', '=', False), ('approve_chain_by_manager', '=', False)]}"/>
                         </group>
                     </group>
                 </page>
