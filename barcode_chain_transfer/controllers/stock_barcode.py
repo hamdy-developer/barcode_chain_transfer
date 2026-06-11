@@ -14,7 +14,7 @@ class StockBarcodeControllerInherit(StockBarcodeController):
 
     @http.route(
         '/barcode_chain_transfer/get_locations',
-        type='json',
+        type='jsonrpc',
         auth='user',
     )
     def get_chain_locations(self, search_term='', limit=40) -> list:
@@ -35,7 +35,7 @@ class StockBarcodeControllerInherit(StockBarcodeController):
 
     @http.route(
         '/barcode_chain_transfer/get_picking_types',
-        type='json',
+        type='jsonrpc',
         auth='user',
     )
     def get_chain_picking_types(self, search_term='', limit=40) -> list:
@@ -68,7 +68,7 @@ class StockBarcodeControllerInherit(StockBarcodeController):
 
     @http.route(
         '/barcode_chain_transfer/save_chain_data',
-        type='json',
+        type='jsonrpc',
         auth='user',
     )
     def save_chain_data(
@@ -113,7 +113,7 @@ class StockBarcodeControllerInherit(StockBarcodeController):
 
     @http.route(
         '/barcode_chain_transfer/clear_chain_data',
-        type='json',
+        type='jsonrpc',
         auth='user',
     )
     def clear_chain_data(self, picking_id: int) -> dict:
