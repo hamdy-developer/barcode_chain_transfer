@@ -27,7 +27,7 @@ class StockBarcodeControllerInherit(StockBarcodeController):
         domain = [('usage', 'in', ['internal', 'transit'])]
         results = request.env['stock.location'].name_search(
             name=search_term,
-            args=domain,
+            domain=domain,
             operator='ilike',
             limit=limit,
         )
@@ -48,7 +48,7 @@ class StockBarcodeControllerInherit(StockBarcodeController):
         domain = [('active', '=', True)]
         results = request.env['stock.picking.type'].name_search(
             name=search_term,
-            args=domain,
+            domain=domain,
             operator='ilike',
             limit=limit,
         )
