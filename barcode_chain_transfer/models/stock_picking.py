@@ -136,7 +136,7 @@ class StockPicking(models.Model):
                     picking.location_dest_id = picking.chain_transit_location_id
                 # Force moves destination to match transit
                 moves_to_update = picking.move_ids.filtered(
-                    lambda m: not m.scrapped and m.location_dest_id != picking.chain_transit_location_id
+                    lambda m: not m.scrap_id and m.location_dest_id != picking.chain_transit_location_id
                 )
                 if moves_to_update:
                     moves_to_update.write({'location_dest_id': picking.chain_transit_location_id.id})
@@ -144,7 +144,7 @@ class StockPicking(models.Model):
                 # Recompute default location
                 picking._compute_location_id()
                 moves_to_update = picking.move_ids.filtered(
-                    lambda m: not m.scrapped and m.location_dest_id != picking.location_dest_id
+                    lambda m: not m.scrap_id and m.location_dest_id != picking.location_dest_id
                 )
                 if moves_to_update:
                     moves_to_update.write({'location_dest_id': picking.location_dest_id.id})
@@ -229,7 +229,7 @@ class StockPicking(models.Model):
                             'product_id': move.product_id.id,
                             'product_uom_qty': qty,
                             'product_uom': move.product_uom.id,
-                            'name': move.name or move.product_id.display_name,
+                            'description_picking': move.description_picking or move.product_id.display_name,
                         })
 
         # Execute standard validation
@@ -316,7 +316,7 @@ class StockPicking(models.Model):
                     'product_id': move_data['product_id'],
                     'product_uom_qty': move_data['product_uom_qty'],
                     'product_uom': move_data['product_uom'],
-                    'name': move_data['name'],
+                    'description_picking': move_data['description_picking'],
                     'location_id': chain_data['transit_location_id'],
                     'location_dest_id': chain_data['end_location_id'],
                 }))

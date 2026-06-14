@@ -79,7 +79,7 @@ class TestChainTransfer(TransactionCase):
             'chain_dest_picking_type_id': self.dest_picking_type.id,
             'chain_end_location_id': self.end_location.id,
             'move_ids': [(0, 0, {
-                'name': self.product.display_name,
+                'description_picking': self.product.display_name,
                 'product_id': self.product.id,
                 'product_uom_qty': quantity,
                 'product_uom': self.product.uom_id.id,
@@ -163,7 +163,7 @@ class TestChainTransfer(TransactionCase):
             'location_id': self.env.ref('stock.stock_location_suppliers').id,
             'location_dest_id': self.warehouse.lot_stock_id.id,
             'move_ids': [(0, 0, {
-                'name': self.product.display_name,
+                'description_picking': self.product.display_name,
                 'product_id': self.product.id,
                 'product_uom_qty': 3.0,
                 'product_uom': self.product.uom_id.id,
@@ -206,7 +206,7 @@ class TestChainTransfer(TransactionCase):
             'chain_end_location_id': self.end_location.id,
             'move_ids': [
                 (0, 0, {
-                    'name': self.product.display_name,
+                    'description_picking': self.product.display_name,
                     'product_id': self.product.id,
                     'product_uom_qty': 10.0,
                     'product_uom': self.product.uom_id.id,
@@ -214,7 +214,7 @@ class TestChainTransfer(TransactionCase):
                     'location_dest_id': self.transit_location.id,
                 }),
                 (0, 0, {
-                    'name': product2.display_name,
+                    'description_picking': product2.display_name,
                     'product_id': product2.id,
                     'product_uom_qty': 7.0,
                     'product_uom': product2.uom_id.id,
@@ -272,7 +272,7 @@ class TestChainTransfer(TransactionCase):
             'name': 'Normal Stock Operator',
             'login': 'operator1',
             'email': 'op1@example.com',
-            'groups_id': [(6, 0, [self.env.ref('stock.group_stock_user').id])],
+            'group_ids': [(6, 0, [self.env.ref('stock.group_stock_user').id])],
         })
         with self.assertRaises(UserError):
             picking.with_user(normal_user).action_approve_chain()
@@ -313,7 +313,7 @@ class TestChainTransfer(TransactionCase):
             'chain_dest_picking_type_id': self.dest_picking_type.id,
             'chain_end_location_id': self.end_location.id,
             'move_ids': [(0, 0, {
-                'name': self.product.display_name,
+                'description_picking': self.product.display_name,
                 'product_id': self.product.id,
                 'product_uom_qty': 5.0,
                 'product_uom': self.product.uom_id.id,
@@ -349,7 +349,7 @@ class TestChainTransfer(TransactionCase):
             'chain_transit_location_id': self.transit_location.id,
             'chain_dest_picking_type_id': self.dest_picking_type.id,
             'move_ids': [(0, 0, {
-                'name': self.product.display_name,
+                'description_picking': self.product.display_name,
                 'product_id': self.product.id,
                 'product_uom_qty': 5.0,
                 'product_uom': self.product.uom_id.id,

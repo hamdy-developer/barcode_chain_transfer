@@ -10,7 +10,7 @@
         and End Location. On validation, a second transfer is automatically
         created with the same products, routing from transit to the end location.
     """,
-    'author': 'ENG/Mohamed Hamdy',
+    'author': 'ENG/Mohamed Saber',
     'website': 'https://bps-solution.odoo.com',
     'category': 'Inventory/Inventory',
     'version': '19.0.1.0.0',
