@@ -81,7 +81,7 @@ class StockPicking(models.Model):
             if transit_loc:
                 vals['location_dest_id'] = transit_loc
                 # Propagate to moves inside vals
-                for move_field in ('move_ids', 'move_ids_without_package'):
+                for move_field in ('move_ids',):
                     if move_field in vals and isinstance(vals[move_field], list):
                         for command in vals[move_field]:
                             if isinstance(command, (list, tuple)) and len(command) >= 3:
@@ -156,11 +156,11 @@ class StockPicking(models.Model):
         """Propagate transit location change in UI."""
         if self.chain_transit_location_id:
             self.location_dest_id = self.chain_transit_location_id
-            for move in (self.move_ids | self.move_ids_without_package):
+            for move in self.move_ids:
                 move.location_dest_id = self.chain_transit_location_id
         else:
             self._compute_location_id()
-            for move in (self.move_ids | self.move_ids_without_package):
+            for move in self.move_ids:
                 move.location_dest_id = self.location_dest_id
 
     @api.onchange('chain_dest_picking_type_id')
