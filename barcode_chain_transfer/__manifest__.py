@@ -13,7 +13,7 @@
     'author': 'ENG/Mohamed Hamdy',
     'website': 'https://bps-solution.odoo.com',
     'category': 'Inventory/Inventory',
-    'version': '18.0.2.1.0',
+    'version': '18.0.2.2.0',
     'depends': ['stock', 'stock_barcode'],
     'data': [
         'data/sequence_data.xml',

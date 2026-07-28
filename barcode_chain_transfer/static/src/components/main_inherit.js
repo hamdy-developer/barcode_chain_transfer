@@ -146,9 +146,3 @@ patch(MainComponent.prototype, {
         });
     },
 });
-
-// Register ChainTransferDialog as a sub-component of MainComponent
-MainComponent.components = {
-    ...MainComponent.components,
-    ChainTransferDialog,
-};

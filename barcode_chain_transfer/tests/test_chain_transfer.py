@@ -297,6 +297,32 @@ class TestChainTransfer(TransactionCase):
             "The backorder must also be routed through the transit location",
         )
 
+    def test_chain_creation_is_idempotent(self) -> None:
+        """A replayed validation must not create a second chain.
+
+        Double clicks and HTTP retries after a gateway timeout replay the whole
+        call; only one second-step transfer may ever exist per chain.
+        """
+        picking = self._create_picking_with_chain(quantity=5.0)
+        picking.action_confirm()
+        for move in picking.move_ids:
+            move.quantity = move.product_uom_qty
+            move.picked = True
+
+        self._validate(picking)
+        chain_origin = picking.chain_origin
+        self.assertEqual(len(self._get_second_picking(picking)), 1)
+
+        # Replay both entry points.
+        picking._create_chain_transfers()
+        self._validate(picking)
+
+        self.assertEqual(picking.chain_origin, chain_origin)
+        self.assertEqual(
+            len(self._get_second_picking(picking)), 1,
+            "Replaying the validation must not duplicate the chained transfer",
+        )
+
     def test_source_origin_is_preserved(self) -> None:
         """Stamping the chain reference must not erase the source document."""
         picking = self._create_picking_with_chain(quantity=5.0, origin='PO00042')

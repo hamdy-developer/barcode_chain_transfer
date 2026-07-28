@@ -299,6 +299,18 @@ msgid "The chain approval state cannot be modified directly. Use the 'Approve Ch
 msgstr "لا يمكن تعديل حالة اعتماد السلسلة مباشرةً. يرجى استخدام زر «اعتماد السلسلة» بدلاً من ذلك."
 
 #. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.js:0
+msgid "The chain transfer could not be cleared."
+msgstr "تعذر مسح بيانات حركة السلسلة."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.js:0
+msgid "The chain transfer could not be saved."
+msgstr "تعذر حفظ بيانات حركة السلسلة."
+
+#. module: barcode_chain_transfer
 #: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_end_location_id
 msgid "The final destination location for the second transfer."
 msgstr "موقع الوجهة النهائي للحركة الثانية."
@@ -307,6 +319,12 @@ msgstr "موقع الوجهة النهائي للحركة الثانية."
 #: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_dest_picking_type_id
 msgid "The picking type for the automatically created second transfer."
 msgstr "نوع العملية للحركة الثانية التي يتم إنشاؤها تلقائياً."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.js:0
+msgid "The server could not be reached. Please try again."
+msgstr "تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى."
 
 #. module: barcode_chain_transfer
 #. odoo-javascript

@@ -419,6 +419,21 @@ class StockPicking(models.Model):
 
         :return: the created second-step pickings
         """
+        if not self:
+            return self.browse()
+
+        # Serialise concurrent validations of the same transfer. A double click
+        # on a slow connection - or an HTTP retry after a gateway timeout - runs
+        # this method twice: without the lock both runs read `chain_origin` as
+        # empty and each creates its own second transfer.
+        self.env.cr.execute(
+            'SELECT id FROM stock_picking WHERE id IN %s FOR UPDATE',
+            (tuple(self.ids),),
+        )
+        # The lock was only granted once the competing transaction committed, so
+        # re-read `chain_origin` instead of trusting the pre-lock cache.
+        self.invalidate_recordset(['chain_origin'])
+
         picking_vals_list = []
         origin_by_picking = {}
 

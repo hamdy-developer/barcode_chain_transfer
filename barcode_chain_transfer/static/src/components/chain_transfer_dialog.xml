@@ -41,10 +41,10 @@
                                 <i class="fa fa-times"/>
                             </button>
                         </div>
-                        <div t-if="state.searchingTransit" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
+                        <div t-if="state.transitLoading" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
                             <i class="fa fa-spinner fa-spin text-muted"/>
                         </div>
-                        <div t-if="state.searchingTransit and state.locationResults.length"
+                        <div t-if="state.transitOpen and state.locationResults.length"
                              class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
                              style="z-index: 1050; max-height: 200px; overflow-y: auto;">
                             <t t-foreach="state.locationResults" t-as="loc" t-key="loc.id">
@@ -55,7 +55,7 @@
                                 </button>
                             </t>
                         </div>
-                        <div t-if="state.searchingTransit and !state.locationResults.length"
+                        <div t-if="state.transitOpen and !state.transitLoading and !state.locationResults.length"
                              class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
                              style="z-index: 1050;">
                             <div class="list-group-item text-muted py-2">No locations found</div>
@@ -90,10 +90,10 @@
                                 <i class="fa fa-times"/>
                             </button>
                         </div>
-                        <div t-if="state.searchingPickingType" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
+                        <div t-if="state.pickingTypeLoading" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
                             <i class="fa fa-spinner fa-spin text-muted"/>
                         </div>
-                        <div t-if="state.searchingPickingType and state.pickingTypeResults.length"
+                        <div t-if="state.pickingTypeOpen and state.pickingTypeResults.length"
                              class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
                              style="z-index: 1050; max-height: 200px; overflow-y: auto;">
                             <t t-foreach="state.pickingTypeResults" t-as="pt" t-key="pt.id">
@@ -104,7 +104,7 @@
                                 </button>
                             </t>
                         </div>
-                        <div t-if="state.searchingPickingType and !state.pickingTypeResults.length"
+                        <div t-if="state.pickingTypeOpen and !state.pickingTypeLoading and !state.pickingTypeResults.length"
                              class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
                              style="z-index: 1050;">
                             <div class="list-group-item text-muted py-2">No picking types found</div>
@@ -148,10 +148,10 @@
                                 <i class="fa fa-times"/>
                             </button>
                         </div>
-                        <div t-if="state.searchingEndLocation" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
+                        <div t-if="state.endLocationLoading" class="position-absolute mt-2 me-2" style="right: 50px; top: 0; z-index: 10;">
                             <i class="fa fa-spinner fa-spin text-muted"/>
                         </div>
-                        <div t-if="state.searchingEndLocation and state.endLocationResults.length"
+                        <div t-if="state.endLocationOpen and state.endLocationResults.length"
                              class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
                              style="z-index: 1050; max-height: 200px; overflow-y: auto;">
                             <t t-foreach="state.endLocationResults" t-as="loc" t-key="loc.id">
@@ -162,7 +162,7 @@
                                 </button>
                             </t>
                         </div>
-                        <div t-if="state.searchingEndLocation and !state.endLocationResults.length"
+                        <div t-if="state.endLocationOpen and !state.endLocationLoading and !state.endLocationResults.length"
                              class="o_chain_dropdown list-group position-absolute w-100 shadow-sm"
                              style="z-index: 1050;">
                             <div class="list-group-item text-muted py-2">No locations found</div>

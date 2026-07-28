@@ -4,6 +4,12 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
 import { rpc } from "@web/core/network/rpc";
+import { useService } from "@web/core/utils/hooks";
+import { useDebounced } from "@web/core/utils/timing";
+
+// Handheld scanners are often on a weak warehouse network: searching on every
+// keystroke would queue a request per character.
+const SEARCH_DELAY = 250;
 
 /**
  * ChainTransferDialog
@@ -28,6 +34,7 @@ export class ChainTransferDialog extends Component {
     };
 
     setup() {
+        this.notification = useService("notification");
         this.state = useState({
             // Selected values
             transitLocationId: false,
@@ -41,10 +48,14 @@ export class ChainTransferDialog extends Component {
             pickingTypeResults: [],
             endLocationResults: [],
             usePutawayRules: false,
-            // UI state
-            searchingTransit: false,
-            searchingPickingType: false,
-            searchingEndLocation: false,
+            // Dropdown visibility
+            transitOpen: false,
+            pickingTypeOpen: false,
+            endLocationOpen: false,
+            // In-flight searches
+            transitLoading: false,
+            pickingTypeLoading: false,
+            endLocationLoading: false,
             transitSearch: "",
             pickingTypeSearch: "",
             endLocationSearch: "",
@@ -52,6 +63,19 @@ export class ChainTransferDialog extends Component {
             approveChainByManager: false,
             saving: false,
         });
+
+        // Discards responses that come back after a newer search was fired.
+        this._searchSequence = { transit: 0, pickingType: 0, endLocation: 0 };
+
+        this.searchTransitDebounced = useDebounced(
+            () => this._searchLocations("transit"), SEARCH_DELAY
+        );
+        this.searchPickingTypeDebounced = useDebounced(
+            () => this._searchPickingTypes(), SEARCH_DELAY
+        );
+        this.searchEndLocationDebounced = useDebounced(
+            () => this._searchLocations("endLocation"), SEARCH_DELAY
+        );
 
         onWillStart(async () => {
             // Pre-fill from existing chain data if available
@@ -81,19 +105,15 @@ export class ChainTransferDialog extends Component {
 
             // Auto-fill End Location on load if Picking Type is set but End Location is empty
             if (this.state.destPickingTypeId && !this.state.endLocationId) {
-                try {
-                    const results = await rpc(
-                        "/barcode_chain_transfer/get_picking_types",
-                        { search_term: this.state.destPickingTypeName }
-                    );
-                    const pt = results.find(r => r.id === this.state.destPickingTypeId);
-                    if (pt && pt.default_dest_location_id) {
-                        this.state.endLocationId = pt.default_dest_location_id;
-                        this.state.endLocationName = pt.default_dest_location_name;
-                        this.state.endLocationSearch = pt.default_dest_location_name;
-                    }
-                } catch (error) {
-                    console.error("Error auto-filling default destination location on load:", error);
+                const results = await this._rpcSafe(
+                    "/barcode_chain_transfer/get_picking_types",
+                    { search_term: this.state.destPickingTypeName }
+                );
+                const pt = (results || []).find(r => r.id === this.state.destPickingTypeId);
+                if (pt && pt.default_dest_location_id) {
+                    this.state.endLocationId = pt.default_dest_location_id;
+                    this.state.endLocationName = pt.default_dest_location_name;
+                    this.state.endLocationSearch = pt.default_dest_location_name;
                 }
             }
         });
@@ -121,28 +141,75 @@ export class ChainTransferDialog extends Component {
         );
     }
 
-    // --- Transit Location Search ---
-
-    async onTransitSearchInput(ev) {
-        const searchTerm = ev.target.value;
-        this.state.transitSearch = searchTerm;
-        if (searchTerm.length >= 1) {
-            this.state.searchingTransit = true;
-            this.state.locationResults = await rpc(
-                "/barcode_chain_transfer/get_locations",
-                { search_term: searchTerm }
+    /**
+     * Perform an RPC and surface any failure as a notification.
+     *
+     * A dropped connection in the middle of a warehouse must not throw the
+     * operator into the generic crash dialog.
+     * @returns {Promise<any|null>} the result, or null when the call failed
+     */
+    async _rpcSafe(route, params) {
+        try {
+            return await rpc(route, params);
+        } catch (error) {
+            this.notification.add(
+                error.data && error.data.message
+                    ? error.data.message
+                    : _t("The server could not be reached. Please try again."),
+                { type: "danger" }
             );
-        } else {
-            this.state.searchingTransit = true;
-            this.state.locationResults = await rpc(
-                "/barcode_chain_transfer/get_locations",
-                { search_term: "" }
-            );
+            return null;
         }
     }
 
+    // --- Searches ---
+
+    /**
+     * @param {"transit"|"endLocation"} target which location field is searched
+     */
+    async _searchLocations(target) {
+        const isTransit = target === "transit";
+        const loadingKey = isTransit ? "transitLoading" : "endLocationLoading";
+        const resultsKey = isTransit ? "locationResults" : "endLocationResults";
+        const term = isTransit ? this.state.transitSearch : this.state.endLocationSearch;
+
+        const sequence = ++this._searchSequence[target];
+        this.state[loadingKey] = true;
+        const results = await this._rpcSafe(
+            "/barcode_chain_transfer/get_locations", { search_term: term }
+        );
+        if (sequence !== this._searchSequence[target]) {
+            return; // A newer search already took over.
+        }
+        this.state[loadingKey] = false;
+        this.state[resultsKey] = results || [];
+    }
+
+    async _searchPickingTypes() {
+        const sequence = ++this._searchSequence.pickingType;
+        this.state.pickingTypeLoading = true;
+        const results = await this._rpcSafe(
+            "/barcode_chain_transfer/get_picking_types",
+            { search_term: this.state.pickingTypeSearch }
+        );
+        if (sequence !== this._searchSequence.pickingType) {
+            return;
+        }
+        this.state.pickingTypeLoading = false;
+        this.state.pickingTypeResults = results || [];
+    }
+
+    // --- Transit Location ---
+
+    onTransitSearchInput(ev) {
+        this.state.transitSearch = ev.target.value;
+        this.state.transitOpen = true;
+        this.searchTransitDebounced();
+    }
+
     onTransitFocus() {
-        this.onTransitSearchInput({ target: { value: this.state.transitSearch } });
+        this.state.transitOpen = true;
+        this.searchTransitDebounced();
     }
 
     selectTransitLocation(location) {
@@ -151,7 +218,7 @@ export class ChainTransferDialog extends Component {
         this.state.transitLocationId = locId;
         this.state.transitLocationName = locName;
         this.state.transitSearch = locName;
-        this.state.searchingTransit = false;
+        this.state.transitOpen = false;
         this.state.locationResults = [];
     }
 
@@ -161,28 +228,17 @@ export class ChainTransferDialog extends Component {
         this.state.transitSearch = "";
     }
 
-    // --- Destination Picking Type Search ---
+    // --- Destination Picking Type ---
 
-    async onPickingTypeSearchInput(ev) {
-        const searchTerm = ev.target.value;
-        this.state.pickingTypeSearch = searchTerm;
-        if (searchTerm.length >= 1) {
-            this.state.searchingPickingType = true;
-            this.state.pickingTypeResults = await rpc(
-                "/barcode_chain_transfer/get_picking_types",
-                { search_term: searchTerm }
-            );
-        } else {
-            this.state.searchingPickingType = true;
-            this.state.pickingTypeResults = await rpc(
-                "/barcode_chain_transfer/get_picking_types",
-                { search_term: "" }
-            );
-        }
+    onPickingTypeSearchInput(ev) {
+        this.state.pickingTypeSearch = ev.target.value;
+        this.state.pickingTypeOpen = true;
+        this.searchPickingTypeDebounced();
     }
 
     onPickingTypeFocus() {
-        this.onPickingTypeSearchInput({ target: { value: this.state.pickingTypeSearch } });
+        this.state.pickingTypeOpen = true;
+        this.searchPickingTypeDebounced();
     }
 
     selectPickingType(pickingType) {
@@ -197,7 +253,7 @@ export class ChainTransferDialog extends Component {
         this.state.destPickingTypeId = ptId;
         this.state.destPickingTypeName = ptDisplayName;
         this.state.pickingTypeSearch = ptDisplayName;
-        this.state.searchingPickingType = false;
+        this.state.pickingTypeOpen = false;
         this.state.pickingTypeResults = [];
 
         // Auto-fill End Location from the selected Picking Type's default
@@ -215,28 +271,17 @@ export class ChainTransferDialog extends Component {
         this.clearEndLocation();
     }
 
-    // --- End Location Search ---
+    // --- End Location ---
 
-    async onEndLocationSearchInput(ev) {
-        const searchTerm = ev.target.value;
-        this.state.endLocationSearch = searchTerm;
-        if (searchTerm.length >= 1) {
-            this.state.searchingEndLocation = true;
-            this.state.endLocationResults = await rpc(
-                "/barcode_chain_transfer/get_locations",
-                { search_term: searchTerm }
-            );
-        } else {
-            this.state.searchingEndLocation = true;
-            this.state.endLocationResults = await rpc(
-                "/barcode_chain_transfer/get_locations",
-                { search_term: "" }
-            );
-        }
+    onEndLocationSearchInput(ev) {
+        this.state.endLocationSearch = ev.target.value;
+        this.state.endLocationOpen = true;
+        this.searchEndLocationDebounced();
     }
 
     onEndLocationFocus() {
-        this.onEndLocationSearchInput({ target: { value: this.state.endLocationSearch } });
+        this.state.endLocationOpen = true;
+        this.searchEndLocationDebounced();
     }
 
     selectEndLocation(location) {
@@ -245,7 +290,7 @@ export class ChainTransferDialog extends Component {
         this.state.endLocationId = locId;
         this.state.endLocationName = locName;
         this.state.endLocationSearch = locName;
-        this.state.searchingEndLocation = false;
+        this.state.endLocationOpen = false;
         this.state.endLocationResults = [];
     }
 
@@ -255,7 +300,7 @@ export class ChainTransferDialog extends Component {
         this.state.endLocationSearch = "";
     }
 
-    onPutawayRulesChange(ev) {
+    onPutawayRulesChange() {
         if (this.state.usePutawayRules) {
             this.clearEndLocation();
         }
@@ -269,7 +314,7 @@ export class ChainTransferDialog extends Component {
         }
         this.state.saving = true;
         try {
-            const result = await rpc(
+            const result = await this._rpcSafe(
                 "/barcode_chain_transfer/save_chain_data",
                 {
                     picking_id: this.props.pickingId,
@@ -279,10 +324,18 @@ export class ChainTransferDialog extends Component {
                     chain_use_putaway_rules: this.state.usePutawayRules,
                 }
             );
-            if (result.success) {
-                this.props.onApply(result);
-                this.props.close();
+            if (!result) {
+                return; // The RPC failed and was already reported.
             }
+            if (!result.success) {
+                this.notification.add(
+                    result.error || _t("The chain transfer could not be saved."),
+                    { type: "danger" }
+                );
+                return;
+            }
+            this.props.onApply(result);
+            this.props.close();
         } finally {
             this.state.saving = false;
         }
@@ -291,27 +344,36 @@ export class ChainTransferDialog extends Component {
     async onClear() {
         this.state.saving = true;
         try {
-            const result = await rpc(
+            const result = await this._rpcSafe(
                 "/barcode_chain_transfer/clear_chain_data",
                 { picking_id: this.props.pickingId }
             );
-            if (result.success) {
-                this.clearTransitLocation();
-                this.clearPickingType();
-                this.clearEndLocation();
-                if (this.props.onClear) {
-                    this.props.onClear();
-                }
-                this.props.close();
+            if (!result) {
+                return;
             }
+            if (!result.success) {
+                this.notification.add(
+                    result.error || _t("The chain transfer could not be cleared."),
+                    { type: "danger" }
+                );
+                return;
+            }
+            this.clearTransitLocation();
+            this.clearPickingType();
+            this.clearEndLocation();
+            this.state.usePutawayRules = false;
+            if (this.props.onClear) {
+                this.props.onClear();
+            }
+            this.props.close();
         } finally {
             this.state.saving = false;
         }
     }
 
     onCloseDropdowns() {
-        this.state.searchingTransit = false;
-        this.state.searchingPickingType = false;
-        this.state.searchingEndLocation = false;
+        this.state.transitOpen = false;
+        this.state.pickingTypeOpen = false;
+        this.state.endLocationOpen = false;
     }
 }
