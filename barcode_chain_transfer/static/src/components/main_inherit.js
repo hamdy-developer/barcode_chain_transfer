@@ -40,43 +40,76 @@ patch(MainComponent.prototype, {
      * Open the chain transfer configuration dialog.
      * Pre-fills with existing chain data if available.
      */
+    /**
+     * Normalize a Many2one value coming from the barcode client.
+     *
+     * Records are read server-side with `load=False`, so the value is a plain
+     * id, but the model cache may already have replaced it with a record.
+     * @param {number|number[]|Object|false} value
+     * @returns {number|false}
+     */
+    _chainRecordId(value) {
+        if (Array.isArray(value)) {
+            return value[0];
+        }
+        if (value && typeof value === "object") {
+            return value.id;
+        }
+        return value;
+    },
+
+    /**
+     * Resolve a record's display name without ever throwing.
+     *
+     * `cache.getRecord` raises when the record was not part of the barcode
+     * payload, which would take the whole client action down. The third
+     * argument turns that into a null, and the server-side
+     * `_get_stock_barcode_data` override makes sure chain records are shipped.
+     * @param {string} model
+     * @param {number|false} id
+     * @returns {string}
+     */
+    _chainDisplayName(model, id) {
+        if (!id) {
+            return "";
+        }
+        const record = this.env.model.cache.getRecord(model, id, false);
+        return (record && record.display_name) || "";
+    },
+
     openChainTransferDialog() {
         const record = this.env.model.record;
         const currentChainData = {};
 
         if (record.chain_transit_location_id) {
             const val = record.chain_transit_location_id;
-            currentChainData.chain_transit_location_id = Array.isArray(val) ? val[0] : (typeof val === 'object' ? val.id : val);
-            currentChainData.chain_transit_location_name = Array.isArray(val) ? val[1] : "";
-            if (!currentChainData.chain_transit_location_name && currentChainData.chain_transit_location_id) {
-                const loc = this.env.model.cache.getRecord("stock.location", currentChainData.chain_transit_location_id);
-                currentChainData.chain_transit_location_name = loc ? loc.display_name : "";
-            }
+            currentChainData.chain_transit_location_id = this._chainRecordId(val);
+            currentChainData.chain_transit_location_name = Array.isArray(val)
+                ? val[1]
+                : this._chainDisplayName("stock.location", currentChainData.chain_transit_location_id);
         }
         if (record.chain_dest_picking_type_id) {
             const val = record.chain_dest_picking_type_id;
-            currentChainData.chain_dest_picking_type_id = Array.isArray(val) ? val[0] : (typeof val === 'object' ? val.id : val);
-            currentChainData.chain_dest_picking_type_name = Array.isArray(val) ? val[1] : "";
-            if (!currentChainData.chain_dest_picking_type_name && currentChainData.chain_dest_picking_type_id) {
-                const pt = this.env.model.cache.getRecord("stock.picking.type", currentChainData.chain_dest_picking_type_id);
-                currentChainData.chain_dest_picking_type_name = pt ? pt.display_name : "";
-            }
+            currentChainData.chain_dest_picking_type_id = this._chainRecordId(val);
+            currentChainData.chain_dest_picking_type_name = Array.isArray(val)
+                ? val[1]
+                : this._chainDisplayName("stock.picking.type", currentChainData.chain_dest_picking_type_id);
         }
         if (record.chain_end_location_id) {
             const val = record.chain_end_location_id;
-            currentChainData.chain_end_location_id = Array.isArray(val) ? val[0] : (typeof val === 'object' ? val.id : val);
-            currentChainData.chain_end_location_name = Array.isArray(val) ? val[1] : "";
-            if (!currentChainData.chain_end_location_name && currentChainData.chain_end_location_id) {
-                const loc = this.env.model.cache.getRecord("stock.location", currentChainData.chain_end_location_id);
-                currentChainData.chain_end_location_name = loc ? loc.display_name : "";
-            }
+            currentChainData.chain_end_location_id = this._chainRecordId(val);
+            currentChainData.chain_end_location_name = Array.isArray(val)
+                ? val[1]
+                : this._chainDisplayName("stock.location", currentChainData.chain_end_location_id);
         }
-        
+
         // Pass the default company transit location if any
         if (record.company_chain_transit_location_id) {
             const val = record.company_chain_transit_location_id;
-            currentChainData.company_chain_transit_location_id = Array.isArray(val) ? val[0] : (typeof val === 'object' ? val.id : val);
-            currentChainData.company_chain_transit_location_name = Array.isArray(val) ? val[1] : "";
+            currentChainData.company_chain_transit_location_id = this._chainRecordId(val);
+            currentChainData.company_chain_transit_location_name = Array.isArray(val)
+                ? val[1]
+                : this._chainDisplayName("stock.location", currentChainData.company_chain_transit_location_id);
         }
 
         currentChainData.chain_use_putaway_rules = record.chain_use_putaway_rules || false;

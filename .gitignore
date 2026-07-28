@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Knowledge base must never be nested inside a project repo (it would become a gitlink)
+odoo-knowledge/

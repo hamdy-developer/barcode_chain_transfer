@@ -1,13 +1,13 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* barcode_chain_transfer
+# 	* barcode_chain_transfer
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-01 00:00+0000\n"
-"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"POT-Creation-Date: 2026-07-28 14:22+0000\n"
+"PO-Revision-Date: 2026-07-28 14:22+0000\n"
 "Last-Translator: ENG/Mohamed Hamdy\n"
 "Language-Team: Arabic\n"
 "Language: ar\n"
@@ -17,19 +17,80 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
 
 #. module: barcode_chain_transfer
-#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_transit_location_id
-msgid "Transit Location"
-msgstr "موقع العبور"
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.view_picking_form_barcode_chain
+msgid "<span class=\"o_stat_text\">Chain Group</span>"
+msgstr "<span class=\"o_stat_text\">مجموعة السلسلة</span>"
 
 #. module: barcode_chain_transfer
-#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_dest_picking_type_id
-msgid "Destination Picking Type"
-msgstr "نوع عملية الوجهة"
+#. odoo-python
+#: code:addons/barcode_chain_transfer/controllers/stock_barcode.py:0
+msgid "A Transit Location and a Destination Picking Type are required."
+msgstr "موقع العبور ونوع عملية الوجهة حقلان مطلوبان."
 
 #. module: barcode_chain_transfer
-#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_end_location_id
-msgid "End Location"
-msgstr "الموقع النهائي"
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Apply"
+msgstr "تطبيق"
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Approval Required:"
+msgstr "مطلوب اعتماد:"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_state
+msgid "Approval state of the chain transfer. Requires manager approval if enabled in settings."
+msgstr "حالة اعتماد حركة السلسلة. تتطلب موافقة المدير في حال تفعيلها من الإعدادات."
+
+#. module: barcode_chain_transfer
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.view_picking_form_barcode_chain
+msgid "Approve Chain"
+msgstr "اعتماد السلسلة"
+
+#. module: barcode_chain_transfer
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.res_config_settings_view_form_barcode_chain
+msgid "Approve Chain Transfers"
+msgstr "اعتماد حركات السلسلة"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_company__approve_chain_by_manager
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_config_settings__approve_chain_by_manager
+msgid "Approve Chain Transfers by Manager"
+msgstr "اعتماد حركات السلسلة بواسطة المدير"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__approve_chain_by_manager
+msgid "Approve Chain by Manager"
+msgstr "اعتماد السلسلة بواسطة المدير"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields.selection,name:barcode_chain_transfer.selection__stock_picking__chain_state__approved
+msgid "Approved"
+msgstr "معتمدة"
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Approved:"
+msgstr "معتمدة:"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_origin
+msgid "Auto-generated reference shared by both chain transfers."
+msgstr "مرجع يتم إنشاؤه تلقائياً ومشترك بين حركتَي السلسلة."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: barcode_chain_transfer
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.view_picking_form_barcode_chain
+msgid "Chain Configuration"
+msgstr "إعدادات السلسلة"
 
 #. module: barcode_chain_transfer
 #: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_origin
@@ -37,29 +98,205 @@ msgid "Chain Reference"
 msgstr "مرجع السلسلة"
 
 #. module: barcode_chain_transfer
-#: addons/barcode_chain_transfer/models/stock_picking.py:1
-msgid "Could not generate a chain transfer sequence. Please check the sequence 'chain.transfer.origin' exists."
-msgstr "تعذر إنشاء تسلسل حركة السلسلة. يرجى التحقق من وجود التسلسل 'chain.transfer.origin'."
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_state
+msgid "Chain State"
+msgstr "حالة الاعتماد"
 
 #. module: barcode_chain_transfer
-#: addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.js:1
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.view_picking_form_barcode_chain
+msgid "Chain Status"
+msgstr "حالة السلسلة"
+
+#. module: barcode_chain_transfer
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.view_picking_form_barcode_chain
+msgid "Chain Transfer"
+msgstr "حركة السلسلة"
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.js:0
+#: code:addons/barcode_chain_transfer/static/src/components/main_inherit.xml:0
 msgid "Chain Transfer Settings"
 msgstr "إعدادات حركة السلسلة"
 
 #. module: barcode_chain_transfer
-#: model:ir.sequence,name:barcode_chain_transfer.seq_chain_transfer_origin
-msgid "Chain Transfer Origin"
-msgstr "مرجع أصل حركة السلسلة"
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Clear"
+msgstr "مسح"
+
+#. module: barcode_chain_transfer
+#: model:ir.model,name:barcode_chain_transfer.model_res_company
+msgid "Companies"
+msgstr "الشركات"
+
+#. module: barcode_chain_transfer
+#: model:ir.model,name:barcode_chain_transfer.model_res_config_settings
+msgid "Config Settings"
+msgstr "إعدادات التهيئة"
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "Could not generate a chain transfer sequence. Please check the sequence 'chain.transfer.origin' exists."
+msgstr "تعذر إنشاء تسلسل حركة السلسلة. يرجى التحقق من وجود التسلسل 'chain.transfer.origin'."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_company__company_chain_transit_location_id
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_config_settings__company_chain_transit_location_id
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__company_chain_transit_location_id
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.res_config_settings_view_form_barcode_chain
+msgid "Default Transit Location"
+msgstr "موقع العبور الافتراضي"
+
+#. module: barcode_chain_transfer
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.res_config_settings_view_form_barcode_chain
+msgid "Default transit location pre-filled in Barcode Chain Transfer dialog."
+msgstr "موقع العبور الافتراضي الذي يتم تعبئته مسبقاً في نافذة حركة السلسلة بالباركود."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_res_config_settings__company_chain_transit_location_id
+msgid "Default transit location pre-filled in the Barcode Chain Transfer dialog."
+msgstr "موقع العبور الافتراضي الذي يتم تعبئته مسبقاً في نافذة حركة السلسلة بالباركود."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_dest_picking_type_id
+msgid "Destination Picking Type"
+msgstr "نوع عملية الوجهة"
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields.selection,name:barcode_chain_transfer.selection__stock_picking__chain_state__draft
+msgid "Draft"
+msgstr "مسودة"
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_end_location_id
+msgid "End Location"
+msgstr "الموقع النهائي"
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "If checked, Odoo's putaway rules will automatically determine the End Location."
+msgstr "عند التفعيل، تقوم قواعد التخزين في أودو بتحديد الموقع النهائي تلقائياً."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_use_putaway_rules
+msgid "If checked, the end location is determined automatically by Odoo's putaway rules."
+msgstr "عند التفعيل، يتم تحديد الموقع النهائي تلقائياً بواسطة قواعد التخزين في أودو."
+
+#. module: barcode_chain_transfer
+#: model:ir.model.fields,help:barcode_chain_transfer.field_res_config_settings__approve_chain_by_manager
+msgid "If enabled, all barcode chain transfers will require approval by an Inventory Manager before they can be validated."
+msgstr "عند التفعيل، تتطلب جميع حركات السلسلة بالباركود اعتماد مدير المخازن قبل التمكن من تأكيدها."
 
 #. module: barcode_chain_transfer
 #: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_transit_location_id
 msgid "Intermediate transit location. When set, this becomes the destination of the current transfer, and a second transfer is created from here to the End Location upon validation."
-msgstr "موقع العبور الوسيط. عند تعيينه، يصبح هذا هو وجهة الحركة الحالية، ويتم إنشاء حركة ثانية من هنا إلى الموقع النهائي عند التحقق."
+msgstr "موقع العبور الوسيط. عند تعيينه، يصبح هذا هو موقع وجهة الحركة الحالية، ويتم إنشاء حركة ثانية من هنا إلى الموقع النهائي عند التأكيد."
 
 #. module: barcode_chain_transfer
-#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_dest_picking_type_id
-msgid "The picking type for the automatically created second transfer."
-msgstr "نوع العملية للحركة الثانية التي يتم إنشاؤها تلقائياً."
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "No End Location could be determined for the chain transfer of %(picking)s. Set one explicitly, or give the Destination Picking Type a default destination location."
+msgstr "تعذر تحديد موقع نهائي لحركة السلسلة الخاصة بـ %(picking)s. يرجى تحديده صراحةً، أو تعيين موقع وجهة افتراضي لنوع عملية الوجهة."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "No locations found"
+msgstr "لا توجد مواقع مطابقة"
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "No picking types found"
+msgstr "لا توجد أنواع عمليات مطابقة"
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "Only Inventory Managers are allowed to approve chain transfers."
+msgstr "يُسمح لمديري المخازن فقط باعتماد حركات السلسلة."
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/controllers/stock_barcode.py:0
+msgid "Only internal and transit locations can be used for a chain transfer."
+msgstr "لا يمكن استخدام سوى المواقع الداخلية ومواقع العبور في حركة السلسلة."
+
+#. module: barcode_chain_transfer
+#: model_terms:ir.ui.view,arch_db:barcode_chain_transfer.res_config_settings_view_form_barcode_chain
+msgid "Require inventory manager approval before validating chain transfers."
+msgstr "طلب اعتماد مدير المخازن قبل تأكيد حركات السلسلة."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Saving..."
+msgstr "جارٍ الحفظ..."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Search end location..."
+msgstr "ابحث عن الموقع النهائي..."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Search picking type..."
+msgstr "ابحث عن نوع العملية..."
+
+#. module: barcode_chain_transfer
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "Search transit location..."
+msgstr "ابحث عن موقع العبور..."
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/controllers/stock_barcode.py:0
+msgid "Set an End Location or enable the putaway rules."
+msgstr "يرجى تحديد موقع نهائي أو تفعيل قواعد التخزين."
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "The %(label)s %(name)s belongs to %(other_company)s while this transfer belongs to %(company)s."
+msgstr "%(label)s %(name)s يتبع %(other_company)s بينما تتبع هذه الحركة %(company)s."
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "The Destination Picking Type %(picking_type)s is archived and cannot be used for a chain transfer."
+msgstr "نوع عملية الوجهة %(picking_type)s مؤرشف ولا يمكن استخدامه في حركة السلسلة."
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "The End Location %(location)s cannot receive goods: only internal and transit locations can be used."
+msgstr "الموقع النهائي %(location)s لا يمكنه استقبال البضائع: لا يمكن استخدام سوى المواقع الداخلية ومواقع العبور."
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "The Transit Location %(location)s cannot be used for a chain transfer: only internal and transit locations can hold goods."
+msgstr "لا يمكن استخدام موقع العبور %(location)s في حركة السلسلة: المواقع الداخلية ومواقع العبور فقط هي التي يمكنها الاحتفاظ بالبضائع."
+
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "The chain approval state cannot be modified directly. Use the 'Approve Chain' button instead."
+msgstr "لا يمكن تعديل حالة اعتماد السلسلة مباشرةً. يرجى استخدام زر «اعتماد السلسلة» بدلاً من ذلك."
 
 #. module: barcode_chain_transfer
 #: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_end_location_id
@@ -67,48 +304,63 @@ msgid "The final destination location for the second transfer."
 msgstr "موقع الوجهة النهائي للحركة الثانية."
 
 #. module: barcode_chain_transfer
-#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_origin
-msgid "Auto-generated reference shared by both chain transfers."
-msgstr "مرجع يتم إنشاؤه تلقائياً ومشترك بين حركتي السلسلة."
+#: model:ir.model.fields,help:barcode_chain_transfer.field_stock_picking__chain_dest_picking_type_id
+msgid "The picking type for the automatically created second transfer."
+msgstr "نوع العملية للحركة الثانية التي يتم إنشاؤها تلقائياً."
 
 #. module: barcode_chain_transfer
-#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_state
-msgid "Chain State"
-msgstr "حالة السلسلة"
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "This chain transfer has been approved and is ready for validation."
+msgstr "تم اعتماد حركة السلسلة هذه وأصبحت جاهزة للتأكيد."
 
 #. module: barcode_chain_transfer
-#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_company__approve_chain_by_manager
-#: model:ir.model.fields,field_description:barcode_chain_transfer.field_res_config_settings__approve_chain_by_manager
-msgid "Approve Chain Transfers by Manager"
-msgstr "موافقة المدير على حركات السلسلة"
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+msgid "This chain transfer must be approved by an Inventory Manager before it can be validated."
+msgstr "يجب اعتماد حركة السلسلة هذه من قبل مدير المخازن قبل التمكن من تأكيدها."
 
 #. module: barcode_chain_transfer
-#: addons/barcode_chain_transfer/models/stock_picking.py:1
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
 msgid "This chain transfer must be approved by an Inventory Manager before validation."
-msgstr "يجب الموافقة على حركة السلسلة هذه من قبل مدير المخازن قبل التأكيد."
+msgstr "يجب اعتماد حركة السلسلة هذه من قبل مدير المخازن قبل التأكيد."
 
 #. module: barcode_chain_transfer
-#: addons/barcode_chain_transfer/models/stock_picking.py:2
-msgid "Only Inventory Managers are allowed to approve chain transfers."
-msgstr "يُسمح فقط لمديري المخازن بالموافقة على حركات السلسلة."
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+msgid "This transfer is not part of a chain yet."
+msgstr "هذه الحركة ليست جزءاً من سلسلة حتى الآن."
 
 #. module: barcode_chain_transfer
-#: addons/barcode_chain_transfer/views/stock_picking_views.xml:0
-msgid "Approve Chain"
-msgstr "الموافقة على السلسلة"
+#: model:ir.model,name:barcode_chain_transfer.model_stock_picking
+msgid "Transfer"
+msgstr "حركة مخزنية"
 
 #. module: barcode_chain_transfer
-#: selection:stock.picking,chain_state:0
-msgid "Draft"
-msgstr "مسودة"
+#. odoo-python
+#: code:addons/barcode_chain_transfer/controllers/stock_barcode.py:0
+msgid "Transfer not found."
+msgstr "لم يتم العثور على الحركة."
 
 #. module: barcode_chain_transfer
-#: selection:stock.picking,chain_state:0
-msgid "Approved"
-msgstr "معتمدة"
+#. odoo-javascript
+#. odoo-python
+#: code:addons/barcode_chain_transfer/models/stock_picking.py:0
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_transit_location_id
+msgid "Transit Location"
+msgstr "موقع العبور"
 
 #. module: barcode_chain_transfer
-#: addons/barcode_chain_transfer/models/stock_picking.py:0
-msgid "The Destination Location of a chain transfer must match its Transit Location."
-msgstr "يجب أن يتطابق موقع الوجهة لنقل السلسلة مع موقع العبور."
+#. odoo-javascript
+#: code:addons/barcode_chain_transfer/static/src/components/chain_transfer_dialog.xml:0
+#: model:ir.model.fields,field_description:barcode_chain_transfer.field_stock_picking__chain_use_putaway_rules
+msgid "Use Putaway Rules"
+msgstr "استخدام قواعد التخزين"
 
+#. module: barcode_chain_transfer
+#. odoo-python
+#: code:addons/barcode_chain_transfer/controllers/stock_barcode.py:0
+msgid "You are not allowed to access chain transfer data."
+msgstr "ليس لديك صلاحية الوصول إلى بيانات حركة السلسلة."

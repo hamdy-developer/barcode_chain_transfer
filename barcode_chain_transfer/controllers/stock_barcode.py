@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from odoo import http
+from odoo import http, _
+from odoo.exceptions import AccessError
 from odoo.http import request
 from odoo.addons.stock_barcode.controllers.stock_barcode import StockBarcodeController
+
+# Locations goods may legitimately travel through or land in.
+CHAIN_ALLOWED_USAGES = ('internal', 'transit')
 
 
 class StockBarcodeControllerInherit(StockBarcodeController):
@@ -11,6 +15,30 @@ class StockBarcodeControllerInherit(StockBarcodeController):
     Adds location and picking type search endpoints used by the
     chain transfer dialog OWL component.
     """
+
+    def _chain_check_access(self) -> None:
+        """Reject anyone who is not an inventory user.
+
+        ``http.route`` has no ``groups`` option, so the group is enforced here.
+        Without it, every ``auth='user'`` account - including portal users, who
+        have no business in the barcode app - could enumerate the warehouse's
+        locations and operation types.
+        """
+        if not request.env.user.has_group('stock.group_stock_user'):
+            raise AccessError(_(
+                "You are not allowed to access chain transfer data."
+            ))
+
+    def _chain_env(self):
+        """Return an environment scoped to the companies selected in the UI.
+
+        ``request.env`` inside a controller ignores the company switcher, which
+        would leak (or hide) records across companies.
+        """
+        return request.env(context=dict(
+            request.env.context,
+            allowed_company_ids=self._get_allowed_company_ids(),
+        ))
 
     @http.route(
         '/barcode_chain_transfer/get_locations',
@@ -24,8 +52,9 @@ class StockBarcodeControllerInherit(StockBarcodeController):
         :param limit: Maximum number of results
         :return: List of dicts with id and display_name
         """
-        domain = [('usage', 'in', ['internal', 'transit'])]
-        results = request.env['stock.location'].name_search(
+        self._chain_check_access()
+        domain = [('usage', 'in', list(CHAIN_ALLOWED_USAGES))]
+        results = self._chain_env()['stock.location'].name_search(
             name=search_term,
             args=domain,
             operator='ilike',
@@ -45,16 +74,17 @@ class StockBarcodeControllerInherit(StockBarcodeController):
         :param limit: Maximum number of results
         :return: List of dicts with id, display_name, and default destination location details
         """
+        self._chain_check_access()
+        env = self._chain_env()
         domain = [('active', '=', True)]
-        results = request.env['stock.picking.type'].name_search(
+        results = env['stock.picking.type'].name_search(
             name=search_term,
             args=domain,
             operator='ilike',
             limit=limit,
         )
-        picking_type_ids = [res[0] for res in results]
-        picking_types = request.env['stock.picking.type'].browse(picking_type_ids)
-        
+        picking_types = env['stock.picking.type'].browse([res[0] for res in results])
+
         data = []
         for pt in picking_types:
             dest_loc = pt.default_location_dest_id
@@ -88,11 +118,38 @@ class StockBarcodeControllerInherit(StockBarcodeController):
         :param transit_location_id: Transit location ID
         :param dest_picking_type_id: Destination picking type ID
         :param end_location_id: End location ID
+        :param chain_use_putaway_rules: Let putaway rules pick the end location
         :return: Dict with success status and updated picking data
         """
-        picking = request.env['stock.picking'].browse(picking_id)
+        self._chain_check_access()
+        env = self._chain_env()
+        picking = env['stock.picking'].browse(picking_id)
         if not picking.exists():
-            return {'success': False, 'error': 'Picking not found'}
+            return {'success': False, 'error': _("Transfer not found.")}
+
+        if not transit_location_id or not dest_picking_type_id:
+            return {
+                'success': False,
+                'error': _("A Transit Location and a Destination Picking Type are required."),
+            }
+        if not end_location_id and not chain_use_putaway_rules:
+            return {
+                'success': False,
+                'error': _("Set an End Location or enable the putaway rules."),
+            }
+
+        # The dialog only offers internal/transit locations; make sure a crafted
+        # RPC call cannot route goods to a view or partner location either.
+        locations = env['stock.location'].browse(
+            [loc_id for loc_id in (transit_location_id, end_location_id) if loc_id]
+        )
+        if not locations.exists() or any(
+            location.usage not in CHAIN_ALLOWED_USAGES for location in locations
+        ):
+            return {
+                'success': False,
+                'error': _("Only internal and transit locations can be used for a chain transfer."),
+            }
 
         # Write chain fields and update destination to transit location
         picking.write({
@@ -122,9 +179,10 @@ class StockBarcodeControllerInherit(StockBarcodeController):
         :param picking_id: The picking record ID
         :return: Dict with success status
         """
-        picking = request.env['stock.picking'].browse(picking_id)
+        self._chain_check_access()
+        picking = self._chain_env()['stock.picking'].browse(picking_id)
         if not picking.exists():
-            return {'success': False, 'error': 'Picking not found'}
+            return {'success': False, 'error': _("Transfer not found.")}
 
         picking.write({
             'chain_transit_location_id': False,
